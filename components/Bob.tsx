@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 import { PromptType } from "../types";
 
 const randomPhrases = ["yes", "no", "ha ha ha", "i dont even know, man"];
@@ -15,36 +18,50 @@ type Props = {
   customPrompts: PromptType[];
 };
 
-export function Dude({ customPrompts }: Props) {
+export function Bob({ customPrompts }: Props) {
   const [selectedVoice, setSelectedVoice] = useState(0);
   const [phrase, setPhrase] = useState("");
   const [talking, setTalking] = useState(false);
   const [spokenPhrase, setSpokenPhrase] = useState("");
 
-  console.log("custon", customPrompts);
+  const commands: any[] = [];
+
+  customPrompts.forEach((prompt) => {
+    commands.push({
+      command: prompt.input,
+      callback: () => speakPhrase(prompt.answer),
+    });
+  });
+
+  console.log(commands, "maaan");
+
+  useEffect(() => {
+    SpeechRecognition.startListening({ continuous: true });
+  }, []);
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition({ commands });
 
   function talk() {
-    console.log("talking");
     setTalking(true);
     setTimeout(() => {
       setTalking(false);
     }, 200);
   }
 
-  useEffect(() => {
-    console.log("talking changed", talking);
-  }, [talking]);
-
   const speechRef = useRef<SpeechRecognition | null>(null);
 
-  function speakPhrase(phrase: any) {
+  function speakPhrase(phrase: string) {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(phrase);
     utterance.voice = synth.getVoices()[selectedVoice];
 
     utterance.onend = function (event) {
-      console.log("SpeechSynthesisUtterance.onend");
-      speechRef.current && speechRef.current.start();
+      speechRef.current && speechRef.current.startListening();
     };
 
     utterance.onerror = function (event) {
@@ -53,12 +70,8 @@ export function Dude({ customPrompts }: Props) {
 
     utterance.onboundary = function (event) {
       talk();
-      console.log("bouncary", event);
     };
 
-    console.log("utterance", utterance);
-    speechRef.current && speechRef.current.stop();
-    synth.cancel();
     synth.speak(utterance);
   }
 
@@ -69,45 +82,22 @@ export function Dude({ customPrompts }: Props) {
     setPhrase(phrase);
   }
 
-  useEffect(() => {
-    console.log(
-      window.speechSynthesis.getVoices()[selectedVoice],
-      "voice selected"
+  if (!browserSupportsSpeechRecognition) {
+    return (
+      <div>
+        <p>
+          Sorry, your browser doesnt support Talking Bob. Try Google Chrome.
+        </p>
+      </div>
     );
-  }, [selectedVoice]);
-
-  useEffect(() => {
-    if (speechRef.current === null) return;
-
-    speechRef.current = new webkitSpeechRecognition();
-
-    speechRef.current && speechRef.current.start();
-
-    speechRef.current.addEventListener("result", (event) => {
-      const result = event.results[0][0].transcript;
-      setSpokenPhrase(result);
-
-      const customPrompt = customPrompts.filter(
-        (prompt) => prompt.input === result
-      );
-
-      if (customPrompt.length > 0) {
-        speakPhrase(customPrompt[0].answer);
-      } else {
-        speakPhrase(getRandomPhrase());
-      }
-    });
-
-    return () => {
-      speechRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   return (
     <div className="App">
-      <div></div>
-      <h1>Talking Dude</h1>
+      <div>
+        <p>Microphone: {listening ? "on" : "off"}</p>
+      </div>
+      <h1>Talking Bob</h1>
       <button
         onClick={() => {
           speakPhrase(phrase);

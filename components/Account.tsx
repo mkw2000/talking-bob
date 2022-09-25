@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { PromptType } from "../types";
 import { supabase } from "../utils/supabaseClient";
-import { Dude } from "./Dude";
+import { Bob } from "./Bob";
 import { NewPrompt } from "./NewPrompt";
 import { Prompt } from "./Prompt";
 
@@ -55,7 +55,6 @@ export default function Account({ session }: Props) {
       throw error;
     }
     setPrompts(prompts);
-    console.log(prompts, "metallica");
     return;
   }
 
@@ -156,7 +155,7 @@ export default function Account({ session }: Props) {
   }
 
   const Guy = () => {
-    return <Dude customPrompts={prompts} />;
+    return <Bob customPrompts={prompts} />;
   };
 
   const Settings = () => {
