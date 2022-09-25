@@ -18,13 +18,18 @@ type Props = {
   customPrompts: PromptType[];
 };
 
+type Command = {
+  command: string;
+  callback: () => void;
+};
+
 export function Bob({ customPrompts }: Props) {
   const [selectedVoice, setSelectedVoice] = useState(0);
   const [phrase, setPhrase] = useState("");
   const [talking, setTalking] = useState(false);
   const [spokenPhrase, setSpokenPhrase] = useState("");
 
-  const commands: any[] = [];
+  const commands: Command[] = [];
 
   customPrompts.forEach((prompt) => {
     commands.push({
@@ -33,18 +38,13 @@ export function Bob({ customPrompts }: Props) {
     });
   });
 
-  console.log(commands, "maaan");
-
   useEffect(() => {
     SpeechRecognition.startListening({ continuous: true });
   }, []);
 
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition({ commands });
+  const { listening, browserSupportsSpeechRecognition } = useSpeechRecognition({
+    commands,
+  });
 
   function talk() {
     setTalking(true);
