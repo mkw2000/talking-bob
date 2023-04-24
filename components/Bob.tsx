@@ -102,7 +102,7 @@ export function Bob({ customPrompts }: Props) {
     setLoadingAudio(true);
     try {
       const response = await fetch(
-        `https://api.elevenslabs.io/v1/text-to-speech/${voiceIds[selectedVoice].id}`,
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceIds[selectedVoice].id}`,
         {
           method: "POST",
           headers: {
