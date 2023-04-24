@@ -177,24 +177,5 @@ export default function Account({ session }: Props) {
     );
   };
 
-  return (
-    <div>
-      <button
-        onClick={() => {
-          setSettingsActive(false);
-        }}
-      >
-        home
-      </button>
-      <button
-        onClick={() => {
-          setSettingsActive(true);
-        }}
-      >
-        settings
-      </button>
-
-      {settingsActive ? <Settings /> : <Guy />}
-    </div>
-  );
+  return <Guy />;
 }
