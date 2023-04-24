@@ -19,6 +19,19 @@ export function Bob({ customPrompts }: Props) {
   const [talking, setTalking] = useState(false);
   const [spokenPhrase, setSpokenPhrase] = useState("");
 
+  const voiceIds = [
+    {
+      id: "Mmcxgtk6qVdkx0YUY9Qf",
+      description:
+        "I want you to act like Joe Rogan. I want you to respond and answer like Joe Rogan using the tone, manner and vocabulary Joe Rogan would use but try not to use profanity. Do not write any explanations. Only answer like Joe Rogan. You must know all of the knowledge of Joe Rogan.",
+    },
+    {
+      id: "RzfLDq21WFZwLJR8aJ0n",
+      description:
+        "I want you to act like the character Din Djarin from the Mandalorian. I want you to respond and answer like Din Djarin using the tone, manner and vocabulary he would use. Do not write any explanations. Only answer like Din Djarin. You must know all of the knowledge of Din Djarin.",
+    },
+  ];
+
   const commands: Command[] = [];
 
   customPrompts.forEach((prompt) => {
@@ -44,12 +57,10 @@ export function Bob({ customPrompts }: Props) {
       Authorization: `Bearer ${openaiApiKey}`,
     };
 
-    const characterDescription = `I want you to act like Joe Rogan. I want you to respond and answer like Joe Rogan using the tone, manner and vocabulary Joe Rogan would use but try not to use profanity. Do not write any explanations. Only answer like Joe Rogan. You must know all of the knowledge of Joe Rogan."`;
-
     const data = {
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: characterDescription },
+        { role: "system", content: voiceIds[selectedVoice].description },
         { role: "user", content: input },
       ],
     };
@@ -91,7 +102,7 @@ export function Bob({ customPrompts }: Props) {
     setLoadingAudio(true);
     try {
       const response = await fetch(
-        "https://api.elevenlabs.io/v1/text-to-speech/Mmcxgtk6qVdkx0YUY9Qf",
+        `https://api.e        levenslabs.io/v1/text-to-speech/${voiceIds[selectedVoice].id}`,
         {
           method: "POST",
           headers: {
@@ -146,9 +157,13 @@ export function Bob({ customPrompts }: Props) {
     setPhrase(phrase);
   }
 
+  function toggleVoice() {
+    setSelectedVoice((prevVoice) => (prevVoice === 0 ? 1 : 0));
+  }
+
   return (
     <div className="App">
-      <h1>RoganGPT</h1>
+      <h1>VoiceGPT</h1>
 
       <input onChange={handleTextInput} type="text" />
       <button
@@ -160,6 +175,13 @@ export function Bob({ customPrompts }: Props) {
       </button>
       {loadingResponse && <div>thinking...</div>}
       {loadingAudio && <div>loading spoken response...</div>}
+
+      <button onClick={toggleVoice}>
+        Toggle Voice:{" "}
+        {voiceIds[selectedVoice].id === "Mmcxgtk6qVdkx0YUY9Qf"
+          ? "Joe Rogan"
+          : "Mandalorian"}
+      </button>
 
       <div className="guy">
         <div className="eyes">
