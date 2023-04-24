@@ -36,7 +36,7 @@ export function Bob({ customPrompts }: Props) {
   }
 
   async function fetchChatGptResponse(input: string) {
-    const openaiApiKey = process.env.OPEN_AI_API_KEY;
+    const openaiApiKey = process.env.NEXT_PUBLIC_OPEN_AI_API_KEY;
     const url = "https://api.openai.com/v1/chat/completions";
 
     const headers = {
@@ -97,7 +97,7 @@ export function Bob({ customPrompts }: Props) {
           headers: {
             Accept: "audio/mpeg",
             "Content-Type": "application/json",
-            "xi-api-key": process.env.ELEVEN_LABS_API_KEY || "",
+            "xi-api-key": process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY || "",
           },
           body: JSON.stringify({
             text: input,
