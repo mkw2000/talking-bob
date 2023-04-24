@@ -37,7 +37,6 @@ export function Bob({ customPrompts }: Props) {
 
   async function fetchChatGptResponse(input: string) {
     const openaiApiKey = process.env.OPEN_AI_API_KEY;
-    console.log("openaiApiKey", openaiApiKey);
     const url = "https://api.openai.com/v1/chat/completions";
 
     const headers = {
